@@ -6,7 +6,7 @@ import os
 load_dotenv()
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 st.set_page_config(
     page_title="FitAI - Treino Inteligente",
@@ -14,13 +14,46 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("💪 FitAI - Personal Trainer com Gemini")
-st.write("Gere um treino personalizado com base no seu objetivo.")
+menu = st.sidebar.radio(
+    "Menu",
+
+    [
+        "🏠 Dashboard",
+        "💪 Gerar Treino",
+        "💪 Gerar Treino",
+        "⚖️ IMC",
+        "📜 Histórico"
+    ]
+)
+
+
+st.title("🏋️ FitAI")
+st.caption("Seu treinador pessoal inteligente")
+st.write("Crie um treino personalizado de acordo com seu ojetivo.")
 
 nome = st.text_input("Seu nome")
 idade = st.number_input("Idade", min_value=10, max_value=100)
 peso = st.number_input("Peso em kg", min_value=30.0, max_value=200.0)
 altura = st.number_input("Altura em cm", min_value=100, max_value=230)
+
+if altura > 0:
+    imc = peso / ((altura / 100)** 2)
+
+    if imc < 18.5:
+        classificacao = "Abaixo do peso"
+
+    elif imc < 25:
+        classificacao = "Peso normal"
+    
+    elif imc < 30:
+        classificacao = "Sobrepeso"
+
+    else:
+        classificacao = "Obesidade"
+
+    st.metric("Seu IMC", f"{imc:.1f}")
+    st.info(f"Classificação: {classificacao}")
+
 
 objetivo = st.selectbox(
     "Qual seu objetivo?",
@@ -64,9 +97,9 @@ if st.button("Gerar treino"):
             - Cuidados importantes
             """
 
-            resposta = model.generate_content(
+            resposta = model.generate_content(prompt)
 
-            )
+            
 
             st.success("Treino gerado com sucesso!")
             st.markdown(resposta.text)
