@@ -1,11 +1,12 @@
 import streamlit as st # type: ignore
-from google import genai
+import google.generativeai as genai 
 from dotenv import load_dotenv # type: ignore
 import os
 
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 st.set_page_config(
     page_title="FitAI - Treino Inteligente",
@@ -63,9 +64,8 @@ if st.button("Gerar treino"):
             - Cuidados importantes
             """
 
-            resposta = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt
+            resposta = model.generate_content(
+                
             )
 
             st.success("Treino gerado com sucesso!")
