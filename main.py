@@ -11,6 +11,18 @@ criar_banco()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-2.5-flash")
 
+
+try:
+     resposta = model.generate_content(prompt)
+
+     st.success("Treino gerado com sucesso!")
+     st.session_state["Ultimo treino"] = resposta.text
+     st.markdown(st.session_state["Ultimo treino"].replace("\n", "<br>"), unsafe_allow_html=True)
+
+
+except Exception as e:
+    st.error(f"Limite temporário da IA atingido. Aguarde e tente novamente. {str(e)}")
+
 st.set_page_config(        
     page_title="FitAI - Treino Inteligente",
     page_icon="💪",
