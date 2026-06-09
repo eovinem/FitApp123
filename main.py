@@ -9,7 +9,7 @@ load_dotenv()
 criar_banco()
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-2.5-flash")
+model = genai.GenerativeModel("gemini-2.0-flash-lite")
 
 
 st.set_page_config(        
