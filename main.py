@@ -197,8 +197,8 @@ if st.button("Gerar treino"):
                 conn.commit()
                 conn.close()
 
-            except Exception as e:
-                st.error(f"A IA atingiu o limite temporário de uso. Aguarde alguns minutos e tente novamente. {str(e)}")
+            except Exception:
+                st.error(f"A IA atingiu o limite temporário de uso. Aguarde alguns minutos e tente")
 if menu == "📜 Histórico":
         
         st.title("📜 Histórico")
