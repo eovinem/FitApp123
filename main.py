@@ -128,7 +128,7 @@ if st.button("Gerar treino"):
     else:
         with st.spinner("Gerando seu treino..."):
             prompt = f"""
-            Você é um personal trainer profissional.
+            Você é um personal trainer profissional especializado em treinos para fazer em casa.
 
             Crie um plano de treino personalizado em português.
 
@@ -142,8 +142,8 @@ if st.button("Gerar treino"):
             Dias por semana: {dias}
             Restrições: {restricoes}
 
-            equipamentos disponíveis:
-             {', '.join(equipamentos) if equipamentos else 'Nenhum'}
+            Equipamentos disponíveis:
+            {', '.join(equipamentos) if equipamentos else 'Nenhum'}
 
             O plano deve conter:
             - Objetivo
@@ -159,52 +159,46 @@ if st.button("Gerar treino"):
             - Exercício | Séries | Repetições 
 
             Regras:
-            - O treino será executado em casa. 
+            - O treino será executado em casa.
             - Não utilize máquinas de academia.
-            - Não utilize equipamentos profissionais. 
-            - Utilize apenas is equipamentos informados pelo usúario. 
-            - Caso o usúario selecione "Nenhum", utilize apenas exercícios com peso corporal.
+            - Não utilize equipamentos profissionais.
+            - Utilize apenas os equipamentos informados pelo usuário.
+            - Caso o usuário selecione "Nenhum", utilize apenas exercícios com peso corporal.
             - Máximo 300 palavras.
             - Não explique exercícios.
-            - Não escreva introduções. 
+            - Não escreva introduções.
             - Não inclua plano alimentar.
             """
 
-try:
-    resposta = model.generate_content(prompt)
+            try:
+                resposta = model.generate_content(prompt)
 
-    st.success("Treino gerado com sucesso!")
-    st.session_state["Ultimo treino"] = resposta.text
-    st.markdown(
-        st.session_state["Ultimo treino"].replace("\n", "<br>"), 
-        unsafe_allow_html=True
-                 
-     )
+                st.success("Treino gerado com sucesso!")
+                st.session_state["Ultimo treino"] = resposta.text
+                st.markdown(
+                    st.session_state["Ultimo treino"].replace("\n", "<br>"),
+                    unsafe_allow_html=True
+                )
 
+                conn = sqlite3.connect("fitai.db")
+                cursor = conn.cursor()
 
-        
+                cursor.execute("""
+                INSERT INTO treinos
+                (nome, objetivo, imc, treino)
+                VALUES (?, ?, ?, ?)
+                """, (
+                    nome,
+                    objetivo,
+                    round(imc, 1),
+                    resposta.text
+                ))
 
-    conn = sqlite3.connect("fitai.db")
-    cursor = conn.cursor()
+                conn.commit()
+                conn.close()
 
-    cursor.execute("""
-    INSERT INTO treinos
-    (nome, objetivo, imc, treino)
-    VALUES (?, ?, ?, ?)
-    """, (
-        nome,
-        objetivo,
-        round(imc, 1,),
-        resposta.text
-    ))
-
-    conn.commit()
-    conn.close()
-
-
-except Exception as e:
-    st.error(f"Limite temporário da IA atingido. Aguarde e tente novamente. {str(e)}")
-
+            except Exception as e:
+                st.error(f"Limite temporário da IA atingido. Aguarde e tente novamente. {str(e)}")
 if menu == "📜 Histórico":
         
         st.title("📜 Histórico")
